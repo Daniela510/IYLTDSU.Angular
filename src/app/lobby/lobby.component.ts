@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { isNullOrUndefined } from '../app/app.component';
 import { WebsocketService } from '../services/websocket.service';
 
