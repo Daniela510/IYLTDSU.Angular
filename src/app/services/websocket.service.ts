@@ -3,25 +3,24 @@ import { Observable, Observer } from 'rxjs';
 import { AnonymousSubject } from 'rxjs/internal/Subject';
 import { Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
-
-const WEBSOCKET_API_URL = "ws://AMAZON_URL_ENDPOINT";
+import { environment } from "src/environments/environment";
 
 export interface Message {
+  action: string;
   message: string;
-  content: string;
 }
 
 @Injectable()
 export class WebsocketService {
   private subject!: AnonymousSubject<MessageEvent>;
   public messages: Subject<Message>;
-
+  
   constructor() {
-    this.messages = <Subject<Message>>this.connect(WEBSOCKET_API_URL).pipe(
+    this.messages = <Subject<Message>>this.connect(environment.websocketUrl).pipe(
       map(
         (response: MessageEvent): Message => {
           console.log(response.data);
-          return { message: "onreceive", content: response.data};
+          return { action: "onreceive", message: response.data};
         }
       )
     )

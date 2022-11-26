@@ -8,7 +8,9 @@ import { CarouselComponent } from './login/carousel/carousel.component';
 import { MainComponent } from './login/main/main.component';
 import { AcceptTocComponent } from './login/main/accept-toc/accept-toc.component';
 import { X01Component } from './x01/x01.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { LobbyComponent } from './lobby/lobby.component';
+import { WebsocketService } from './services/websocket.service';
 
 @NgModule({
   declarations: [
@@ -17,14 +19,16 @@ import { FormsModule } from '@angular/forms';
     CarouselComponent,
     MainComponent,
     AcceptTocComponent,
-    X01Component
+    X01Component,
+    LobbyComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule
+    FormsModule,
+    ReactiveFormsModule
   ],
-  providers: [],
+  providers: [WebsocketService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
