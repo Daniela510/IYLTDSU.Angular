@@ -11,6 +11,7 @@ import { X01Component } from './x01/x01.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LobbyComponent } from './lobby/lobby.component';
 import { WebsocketService } from './services/websocket.service';
+import { AmplifyAuthenticatorModule } from '@aws-amplify/ui-angular';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { WebsocketService } from './services/websocket.service';
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    AmplifyAuthenticatorModule
   ],
   providers: [WebsocketService],
   bootstrap: [AppComponent]
