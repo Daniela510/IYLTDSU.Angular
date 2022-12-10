@@ -12,13 +12,15 @@ const { v4: uuidv4 } = require('uuid');
 })
 export class X01Component implements OnInit {
   public inviteLink: string = ''
+  public scoreActionButtonText = 'NO SCORE'
   public content = '';
-  public player: number[] = [];
-  public opponent: number[] = [];
-  public player_score: number = 501;
-  public opponent_score: number = 501;
-  public player_avg: number = 0;
-  public opponent_avg: number = 0;
+  public player: Number[] = [];
+  public opponent: Number[] = [];
+  public player_score: Number = 501;
+  public opponent_score: Number = 501;
+  public player_avg: Number = 0;
+  public opponent_avg: Number = 0;
+  public currentInput: Number = 0;
   constructor(
     private webSocketService: WebsocketService,
     private inviteService: InviteService,
@@ -30,18 +32,26 @@ export class X01Component implements OnInit {
       if (JSON.parse(msg.message).action == "x01/score-updated") {
         if (sessionStorage.getItem("playerId") == JSON.parse(msg.message).message.split('#')[0]) {
           this.player.push(JSON.parse(msg.message).message.split('#')[1]);
-          this.player_score -= JSON.parse(msg.message).message.split('#')[1];
-          const result = this.player.reduce((accumulator, current) => {
-            return accumulator + current;
-          }, 0);
-          this.player_avg = result / this.player.length;
+          this.player_score = Number(this.player_score) - Number(JSON.parse(msg.message).message.split('#')[1]);
+          var sum: number = 0;
+          for (var i = 0; i < this.player.length; i++) {
+            sum = sum + Number(this.player[i])
+          }
+          console.log("Sum", sum);
+          console.log("Length", this.player.length);
+          this.player_avg = sum / this.player.length;
+
         } else {
           this.opponent.push(JSON.parse(msg.message).message.split('#')[1]);
-          this.opponent_score -= JSON.parse(msg.message).message.split('#')[1]
-          const result = this.opponent.reduce((accumulator, current) => {
-            return accumulator + current;
-          }, 0);
-          this.opponent_avg = result / this.opponent.length;
+          this.opponent_score = Number(this.opponent_score) - Number(JSON.parse(msg.message).message.split('#')[1]);
+          var sum: number = 0;
+          for (var i = 0; i < this.opponent.length; i++) {
+            sum = sum + Number(this.opponent[i])
+          }
+
+          console.log("Sum", sum);
+          console.log("Length", this.opponent.length);
+          this.opponent_avg = sum / this.opponent.length;
         }
       }
     })
@@ -57,10 +67,26 @@ export class X01Component implements OnInit {
   }
 
   sendScore(input?: number) {
+    if (input! >= 0 && input! <= 9) {
+      this.currentInput = Number(`${this.currentInput}${input!}`)
+      this.scoreActionButtonText = 'OK';
+      return
+    }
     let body = {
       action: 'x01/score',
       message: `${this.route.snapshot.params["roomId"]}#${sessionStorage.getItem('playerId')}#${this.player_score}#${input}`
     }
     this.webSocketService.messages.next(body)
+  }
+
+  clearInput() {
+    this.currentInput = 0;
+    this.scoreActionButtonText = "NO SCORE";
+  }
+
+  scoreAction() {
+    this.sendScore(Number(this.currentInput));
+    this.currentInput = 0;
+    this.scoreActionButtonText = "NO SCORE"
   }
 }
