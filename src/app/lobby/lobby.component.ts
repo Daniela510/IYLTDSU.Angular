@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { isNullOrUndefined } from '../app/app.component';
 import { WebsocketService } from '../services/websocket.service';
 
@@ -10,16 +11,16 @@ import { WebsocketService } from '../services/websocket.service';
 export class LobbyComponent implements OnInit {
   public players: IPlayer[] = []
   public player!: IPlayer
-  constructor(private webSocketService: WebsocketService) {
+  constructor(private webSocketService: WebsocketService, private router: Router) {
     webSocketService.messages.subscribe(msg => {
       console.log("Response from websocket");
       console.log(JSON.parse(msg.message));
       if (JSON.parse(msg.message).action == "room/joined") {
-        this.players.push({id: JSON.parse(msg.message).message })
+        this.players.push({ id: JSON.parse(msg.message).message })
       }
       if (JSON.parse(msg.message).action == "lobby/joined") {
         var playerIds: string[] = JSON.parse(msg.message).message;
-        playerIds.forEach(x=>this.players.push({id: x}))
+        playerIds.forEach(x => this.players.push({ id: x }))
       }
     })
   }
@@ -34,11 +35,12 @@ export class LobbyComponent implements OnInit {
 
   joinLobby() {
     this.players.push(this.player)
-    this.webSocketService.messages.next({action: "rooms/join", message: `lobby#${this.player.id}`})
+    this.webSocketService.messages.next({ action: "rooms/join", message: `lobby#${this.player.id}` })
   }
 
   createPlayerRoom() {
-    this.webSocketService.messages.next({action: "rooms/create", message: this.player.id})
+    this.webSocketService.messages.next({ action: "rooms/create", message: localStorage.getItem("roomId")! })
+    this.router.navigate(['x01', localStorage.getItem("roomId")])
   }
 }
 

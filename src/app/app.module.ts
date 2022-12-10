@@ -11,6 +11,7 @@ import { X01Component } from './x01/x01.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LobbyComponent } from './lobby/lobby.component';
 import { WebsocketService } from './services/websocket.service';
+import { InviteService } from './services/invite.service';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,7 @@ import { WebsocketService } from './services/websocket.service';
     FormsModule,
     ReactiveFormsModule
   ],
-  providers: [WebsocketService],
+  providers: [WebsocketService, InviteService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

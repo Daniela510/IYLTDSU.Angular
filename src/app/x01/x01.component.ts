@@ -2,6 +2,7 @@ import { AfterContentInit, AfterViewInit, Component, OnInit } from '@angular/cor
 import { WebsocketService } from '../services/websocket.service';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { InviteService } from '../services/invite.service';
 const { v4: uuidv4 } = require('uuid');
 
 @Component({
@@ -10,41 +11,56 @@ const { v4: uuidv4 } = require('uuid');
   styleUrls: ['./x01.component.scss']
 })
 export class X01Component implements OnInit {
+  public inviteLink: string = ''
   public content = '';
-  public received: any[] = [];
-  public sent: any[] = [];
-  public defaults: number[] = [26, 41, 45, 60, 85, 100]
-  constructor(private webSocketService: WebsocketService, private route: ActivatedRoute, private router: Router) {
+  public player: number[] = [];
+  public opponent: number[] = [];
+  public player_score: number = 501;
+  public opponent_score: number = 501;
+  public player_avg: number = 0;
+  public opponent_avg: number = 0;
+  constructor(
+    private webSocketService: WebsocketService,
+    private inviteService: InviteService,
+    private route: ActivatedRoute,
+    private router: Router) {
     webSocketService.messages.subscribe(msg => {
-      this.received.push(msg);
       console.log("Response from websocket");
-      console.log(JSON.stringify(msg));
+      console.log(JSON.parse(msg.message));
+      if (JSON.parse(msg.message).action == "x01/score-updated") {
+        if (sessionStorage.getItem("playerId") == JSON.parse(msg.message).message.split('#')[0]) {
+          this.player.push(JSON.parse(msg.message).message.split('#')[1]);
+          this.player_score -= JSON.parse(msg.message).message.split('#')[1];
+          const result = this.player.reduce((accumulator, current) => {
+            return accumulator + current;
+          }, 0);
+          this.player_avg = result / this.player.length;
+        } else {
+          this.opponent.push(JSON.parse(msg.message).message.split('#')[1]);
+          this.opponent_score -= JSON.parse(msg.message).message.split('#')[1]
+          const result = this.opponent.reduce((accumulator, current) => {
+            return accumulator + current;
+          }, 0);
+          this.opponent_avg = result / this.opponent.length;
+        }
+      }
     })
-   }
+  }
 
   ngOnInit(): void {
-    
+    this.inviteLink = this.inviteService.getInviteUrl();
+    console.log();
   }
 
-  onJoin() {
-    let message = { action: 'rooms/create', message: this.route.snapshot.params["roomId"].toString() }
-    this.webSocketService.messages.next(message)
+  getInviteLink() {
+    console.log(this.inviteService.getInviteUrl());
   }
-  sendMsg(value?: string) {
-    console.log(this.route.snapshot.params["roomId"])
-    let message = {
-      action: '',
-      message: ''
+
+  sendScore(input?: number) {
+    let body = {
+      action: 'x01/score',
+      message: `${this.route.snapshot.params["roomId"]}#${sessionStorage.getItem('playerId')}#${this.player_score}#${input}`
     }
-
-    message.action = 'sendmessage'
-    message.message = value ?? this.content;
-
-    this.sent.push(message)
-    this.webSocketService.messages.next(message)
-  }
-
-  buttonPressed(value: number) {
-    this.sendMsg(value.toString())
+    this.webSocketService.messages.next(body)
   }
 }

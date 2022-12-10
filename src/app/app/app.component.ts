@@ -15,11 +15,10 @@ export class AppComponent implements OnInit {
 
   }
   ngOnInit(): void {
-    this.playerId = sessionStorage.getItem("playerId")
-    if (isNullOrUndefined(this.playerId)) {
-      this.playerId = uuidv4();
-      sessionStorage.setItem("playerId", this.playerId!)
-    }
+
+    this.playerId = uuidv4();
+    sessionStorage.setItem("playerId", this.playerId!)
+
     this.roomId = sessionStorage.getItem("roomId")
     if (!isNullOrUndefined(this.roomId)) {
       this.router.navigate(['x01', this.roomId])
