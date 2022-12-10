@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app/app.component';
 import { LoginComponent } from './login/login.component';
@@ -12,6 +11,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LobbyComponent } from './lobby/lobby.component';
 import { WebsocketService } from './services/websocket.service';
 import { InviteService } from './services/invite.service';
+import { AmplifyAuthenticatorModule } from '@aws-amplify/ui-angular';
 
 @NgModule({
   declarations: [
@@ -21,13 +21,14 @@ import { InviteService } from './services/invite.service';
     MainComponent,
     AcceptTocComponent,
     X01Component,
-    LobbyComponent
+    LobbyComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    AmplifyAuthenticatorModule
   ],
   providers: [WebsocketService, InviteService],
   bootstrap: [AppComponent]
